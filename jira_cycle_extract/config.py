@@ -30,8 +30,13 @@ def config_to_options(data):
     options = {
         'connection': {
             'domain': None,
+            'auth_type': None,
             'username': None,
-            'password': None
+            'password': None,
+            'key_cert': None,
+            'access_token': None,
+            'access_token_secret': None,
+            'consumer_key': None
         },
         'settings': {
             'queries': [],
@@ -57,6 +62,21 @@ def config_to_options(data):
 
     if 'password' in config['connection']:
         options['connection']['password'] = config['connection']['password']
+
+    if 'auth_type' in config['connection']:
+        options['connection']['auth_type'] = config['connection']['auth_type']
+
+    if 'key_cert' in config['connection']:
+        options['connection']['key_cert'] = config['connection']['key_cert']
+
+    if 'access_token' in config['connection']:
+        options['connection']['access_token'] = config['connection']['access_token']
+
+    if 'access_token_secret' in config['connection']:
+        options['connection']['access_token_secret'] = config['connection']['access_token_secret']
+
+    if 'consumer_key' in config['connection']:
+        options['connection']['consumer_key'] = config['connection']['consumer_key']
 
     # Parse Queries (list of Criteria) and/or a single Criteria
 

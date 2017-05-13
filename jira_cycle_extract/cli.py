@@ -79,13 +79,32 @@ def get_jira_client(connection):
 
     print "Connecting to", url
 
-    if not username:
-        username = raw_input("Username: ")
+    auth_type = connection['auth_type']
 
-    if not password:
-        password = getpass.getpass("Password: ")
+    if auth_type == 'basic':
+        if not username:
+            username = raw_input("Username: ")
 
-    return JIRA({'server': url}, basic_auth=(username, password))
+        if not password:
+            password = getpass.getpass("Password: ")
+
+        return JIRA({'server': url}, basic_auth=(username, password))
+    else:
+        key_cert = connection['key_cert']
+        access_token = connection['access_token']
+        access_token_secret = connection['access_token_secret']
+        consumer_key = connection['consumer_key']
+        key_cert_data = None
+        with open(key_cert, 'r') as key_cert_file:
+            key_cert_data = key_cert_file.read()
+
+        oauth_dict = {
+            'access_token': access_token,
+            'access_token_secret': access_token_secret,
+            'consumer_key': consumer_key,
+            'key_cert': key_cert_data,
+            }
+        return JIRA({'server': url}, oauth=oauth_dict)
 
 def to_json_string(value):
     if isinstance(value, pd.Timestamp):
