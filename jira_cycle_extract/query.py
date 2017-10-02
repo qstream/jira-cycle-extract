@@ -184,8 +184,28 @@ class QueryManager(object):
         if verbose:
             print "Fetching issues with query:", queryString
 
-        issues = self.jira.search_issues(queryString, expand='changelog', maxResults=self.settings['max_results'])
+        batchSize = 40
 
+        upperLimit = int(self.settings['max_results'])
+        finished = False
+        startAt = 0
+        issues = []
+        while not finished:
+            if startAt + batchSize > upperLimit:
+                batchSize = upperLimit - startAt
+            print "searching startAt=", startAt, "maxResults=", batchSize
+            issueBatch = self.jira.search_issues(queryString, expand='changelog', startAt=startAt, maxResults=batchSize)
+            if verbose:
+                print "Fetched", len(issueBatch), "issues"
+            if len(issueBatch) < batchSize:
+                print "Finished"
+                finished = True
+            if startAt + batchSize == upperLimit:
+                print "Finished"
+                finished = True
+            issues = issues + issueBatch
+            startAt = startAt + batchSize
+            
         if verbose:
             print "Fetched", len(issues), "issues"
 
