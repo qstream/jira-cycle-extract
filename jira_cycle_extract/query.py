@@ -184,7 +184,7 @@ class QueryManager(object):
         if verbose:
             print "Fetching issues with query:", queryString
 
-        batchSize = 20
+        batchSize = 10
 
         upperLimit = int(self.settings['max_results'])
         finished = False
