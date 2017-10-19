@@ -103,10 +103,13 @@ class QueryManager(object):
 
         is_resolved = False
 
+        # sorted_history = reversed(issue.changelog.histories)
+        sorted_history = sorted(issue.changelog.histories, key=lambda x: x.created)
+
         # Find the first status change, if any
         status_changes = filter(
             lambda h: h.field == 'status',
-            itertools.chain.from_iterable([c.items for c in issue.changelog.histories])
+            itertools.chain.from_iterable([c.items for c in sorted_history])
         )
         last_status = status_changes[0].fromString if len(status_changes) > 0 else issue.fields.status.name
         last_resolution = None
@@ -121,7 +124,8 @@ class QueryManager(object):
             is_resolved=is_resolved
         )
 
-        for change in issue.changelog.histories:
+        for change in sorted_history:
+            # print issue.key, change.created
             change_date = dateutil.parser.parse(change.created)
 
             resolutions = filter(lambda i: i.field == 'resolution', change.items)
